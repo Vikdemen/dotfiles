@@ -1,1 +1,160 @@
-/home/user179/.ideavimrc
+source ~/.vimrc
+
+" IDEA specific settings
+set ideajoin
+set idearefactormode=visual
+set clipboard+=ideaput
+set ideamarks
+
+sethandler a:ide
+
+" Plugins
+Plug 'tpope/vim-surround'
+" cs changes surroundings
+" ds deletes surroundings
+" ys surrounds text
+nmap s <Plug>YSurround
+nmap ss s_
+nmap S siw
+xmap s <Plug>VSurround
+
+Plug 'tpope/vim-commentary'
+" gc to comment/uncomment
+" gc text oblect
+" gcgc/gcu to uncomment current and adjacent lines
+" :Commentary for command mode
+
+Plug 'vim-scripts/ReplaceWithRegister'
+" gr to replace with register, normal/visual
+nmap gR griw
+
+Plug 'vim-scripts/argtextobj.vim'
+" makes it work for dicts and lists
+let g:argtextobj_pairs = "(:), {:}, [:]"
+" ia/aa objects
+" very useful for functions
+
+Plug 'kana/vim-textobj-entire'
+" ie/ae objects for whole text
+
+Plug 'machakann/vim-highlightedyank'
+" shows yanked text
+
+Plug 'dbakker/vim-paragraph-motion'
+" makes paragraphs work for whitespace-only lines
+
+Plug 'michaeljsmith/vim-indent-object'
+" for indented text
+
+" Help
+set which-key
+set timeoutlen=5000
+let g:WhichKey_ShowVimActions = "true"
+
+" Highlights unique characters for f/t
+" set quickscope
+" bugged, always highlighted after update
+
+" Ideavim-externsion, allows typing cyrillics
+set keep-english-in-normal-and-restore-in-insert
+
+""" IDEA Actions
+nmap [q <Action>(PreviousOccurence)
+nmap ]q <Action>(NextOccurence)
+nmap [m <Action>(MethodUp)
+nmap ]m <Action>(MethorDown)
+nmap [c <Action>(VcsShowPrevChangeMarker)
+nmap ]c <Action>(VcsShowNextChangeMarker)
+nmap [b <Action>(EditorCodeBlockStart)
+xmap [b <Action>(EditorCodeBlockStartWithSelection)
+nmap ]b <Action>(EditorCodeBlockEnd)
+xmap ]b <Action>(EditorCodeBlockEndWithSelection)
+
+" errors
+nmap ]e <Action>(GotoNextError)
+nmap [e <Action>(GotoPreviousError)
+nmap <leader>e <Action>(ShowErrorDescription)
+
+" Bookmarks
+nmap <leader>m <Action>(ToggleBookmark)
+nmap M <Action>(ShowBookMarks)
+
+" Breakpoints
+nmap <leader>b <Action>(ToggleLineBreakpoint)
+
+nmap <leader>r <Action>(RenameElement)
+xmap <leader>r <Action>(RenameElement)
+
+" Ataman
+map <Space> <Action>(LeaderAction)
+xmap <Space> <Action>(LeaderAction)
+
+" Show clipboard history
+nmap <leader>y <Action>(PasteMultiple)
+xmap <leader>y <Action>(PasteMultiple)
+
+" Extend and shrink selection
+nmap , <Action>(EditorSelectWord)
+xmap , <Action>(EditorSelectWord)
+xmap . <Action>(EditorUnSelectWord)
+
+" Easymotion
+set easymotion
+let g:EasyMotion_do_mapping = 0
+" Jump to any word
+nmap ; <Plug>(easymotion-bd-w)
+xmap ; <Plug>(easymotion-bd-w)
+" Jump to any line
+nmap 0 <Plug>(easymotion-bd-jk)
+xmap 0 <Plug>(easymotion-bd-jk)
+
+" Show usages
+" Shadows sleep for x seconds, not useful
+nmap gs <Action>(ShowUsages)
+
+" I want to make normal mode = to use IDEA action, but not sure how
+xmap = <Action>(ReformatCode)
+
+" I may bind something to ` plus !@#$
+" Or mark + special character
+
+" _ is a free bind
+" + and - are free binds
+
+function! Split(text, delimeter)
+  let parts = []
+  let part = ''
+  for char in a:text
+    if char ==? a:delimeter
+      let parts += [part]
+      let part = ''
+    else
+      let part .= char
+    endif
+  endfor
+  let parts += [part]
+  return parts
+endfunction
+
+function! PopClipboard()
+    let text = @+
+    let lines = Split(text, "\n")
+    let first = lines[0]
+    let rest = lines[1:]
+    let rest_text = ''
+    for line in rest
+        let rest_text .= line
+        let rest_text .= "\n"
+    endfor
+    let @+ = rest_text
+    return first
+endfunction
+
+function! PutClipboardLine()
+    let @p=PopClipboard()
+    put p
+endfunction
+
+map <leader>p :call PutClipboardLine()<CR>
+
+
